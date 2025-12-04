@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>餐桌小隊長</title>
+    <style>
+        /* 基礎設定：禁止選取、滿版顯示 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #FFF8E1; /* 溫暖的蛋黃色 */
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            overflow: hidden; /* 禁止捲動 */
+            user-select: none; /* 禁止小孩選取文字 */
+            -webkit-user-select: none;
+        }
+
+        h1 {
+            color: #F57F17;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        /* 熊貓顯示區 */
+        .panda-container {
+            font-size: 8rem; /* 熊貓超級大 */
+            transition: transform 0.2s;
+            cursor: default;
+        }
+
+        /* 吃東西的動畫效果 */
+        .eating {
+            transform: scale(1.2);
+        }
+
+        /* 對話框 */
+        .message-box {
+            height: 30px;
+            color: #5D4037;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* 進度條容器 */
+        .progress-container {
+            width: 80%;
+            height: 20px;
+            background-color: #FFE082;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #FFCA28;
+        }
+
+        /* 實際進度 */
+        .progress-bar {
+            height: 100%;
+            width: 100%; /* 一開始是滿的 */
+            background-color: #66BB6A; /* 綠色代表食物還很多 */
+            transition: width 0.5s, background-color 0.5s;
+        }
+
+        /* 剩餘口數顯示 */
+        .count-display {
+            font-size: 1.2rem;
+            color: #8D6E63;
+        }
+
+        /* 餵食按鈕 */
+        .feed-btn {
+            background-color: #FF6F00;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #E65100; /* 按鈕立體感 */
+            active: transform: translateY(4px); /* 按下效果 */
+            transition: all 0.1s;
+        }
+
+        .feed-btn:active {
+            box-shadow: 0 0 0 #E65100;
+            transform: translateY(4px);
+        }
+
+        .feed-btn:disabled {
+            background-color: #BDBDBD;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* 完成後的獎勵畫面 */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>熊貓肚子餓了！</h1>
+
+    <div class="message-box" id="message">我想要吃飯飯...</div>
+
+    <div class="panda-container" id="panda">🐼</div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="count-display">還剩下 <span id="count">20</span> 口</div>
+
+    <button class="feed-btn" id="feedBtn" onclick="feedPanda()">餵熊貓吃一口 🥄</button>
+
+    <script>
+        // --- 設定區 ---
+        let totalBites = 20; // 設定總共要吃幾口
+        let currentBites = totalBites;
+        
+        // --- DOM 元素 ---
+        const panda = document.getElementById('panda');
+        const message = document.getElementById('message');
+        const countSpan = document.getElementById('count');
+        const progressBar = document.getElementById('progressBar');
+        const btn = document.getElementById('feedBtn');
+
+        // --- 核心功能 ---
+        function feedPanda() {
+            if (currentBites <= 0) return;
+
+            // 1. 減少口數
+            currentBites--;
+            countSpan.innerText = currentBites;
+
+            // 2. 更新進度條
+            let percentage = (currentBites / totalBites) * 100;
+            progressBar.style.width = percentage + "%";
+            
+            // 變更進度條顏色 (快吃完變紅色)
+            if (percentage < 30) {
+                progressBar.style.backgroundColor = "#EF5350";
+            }
+
+            // 3. 播放動畫與音效
+            panda.classList.add('eating');
+            panda.innerText = "😋"; // 變臉
+            message.innerText = "阿姆！真好吃！";
+            
+            // 4. 0.5秒後復原
+            setTimeout(() => {
+                panda.classList.remove('eating');
+                if (currentBites > 0) {
+                    panda.innerText = "🐼";
+                    message.innerText = "還要再一口...";
+                } else {
+                    finishEating();
+                }
+            }, 500);
+        }
+
+        // --- 吃完的慶祝畫面 ---
+        function finishEating() {
+            panda.innerText = "🥳"; // 慶祝表情
+            message.innerText = "吃飽了！你好棒！";
+            btn.innerText = "任務完成 🎉";
+            btn.disabled = true;
+            btn.style.backgroundColor = "#66BB6A";
+            document.body.style.backgroundColor = "#E8F5E9"; // 背景變綠色
+            
+            // 簡單的彩帶特效 (用 emoji 模擬)
+            let i = 0;
+            let interval = setInterval(() => {
+                if(i > 10) clearInterval(interval);
+                createConfetti();
+                i++;
+            }, 200);
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.innerText = ['🎉', '✨', '⭐', '🎈'][Math.floor(Math.random() * 4)];
+            confetti.style.position = 'absolute';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = '-10vh';
+            confetti.style.fontSize = '2rem';
+            confetti.style.transition = 'top 2s ease-in';
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.style.top = '110vh';
+            }, 100);
+        }
+    </script>
+</body>
+</html>
