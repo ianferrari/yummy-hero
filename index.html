@@ -3,175 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>餐桌小隊長</title>
+    <title>奎奎的餐桌小隊長</title>
     <style>
-        /* 基礎設定：禁止選取、滿版顯示 */
+        /* --- 全局設定 --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #FFF8E1; /* 溫暖的蛋黃色 */
+            background-color: #FFF8E1;
             margin: 0;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-evenly;
-            overflow: hidden; /* 禁止捲動 */
-            user-select: none; /* 禁止小孩選取文字 */
+            overflow: hidden;
+            user-select: none;
             -webkit-user-select: none;
         }
 
-        h1 {
-            color: #F57F17;
+        /* --- 通用類別 --- */
+        .hidden { display: none !important; }
+        .screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 改為置中 */
+        }
+
+        /* --- 1. 角色選擇頁面樣式 --- */
+        #selection-screen h2 {
+            color: #E65100;
             font-size: 1.5rem;
-            margin: 0;
+            margin-bottom: 20px;
         }
 
-        /* 熊貓顯示區 */
-        .panda-container {
-            font-size: 8rem; /* 熊貓超級大 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 兩列 */
+            gap: 15px;
+            padding: 10px;
+            max-height: 80vh;
+            overflow-y: auto; /* 角色多時可滑動 */
+        }
+
+        .char-card {
+            background: white;
+            border: 3px solid #FFD54F;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 0 #FFB300;
+        }
+
+        .char-card:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 #FFB300;
+        }
+
+        .char-icon { font-size: 3rem; display: block; }
+        .char-name { font-size: 1rem; color: #5D4037; font-weight: bold; margin-top: 5px; display: block; }
+
+
+        /* --- 2. 遊戲頁面樣式 (沿用上次微調) --- */
+        #game-screen {
+            justify-content: space-evenly; /* 遊戲頁面維持原本分佈 */
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .back-btn {
+            background: #BCAAA4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .main-character {
+            font-size: 8rem;
             transition: transform 0.2s;
-            cursor: default;
         }
+        
+        .eating { transform: scale(1.2) rotate(10deg); } /* 吃東西加一點旋轉 */
 
-        /* 吃東西的動畫效果 */
-        .eating {
-            transform: scale(1.2);
-        }
-
-        /* 對話框 */
         .message-box {
             height: 30px;
             color: #5D4037;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
         }
 
-        /* 進度條容器 */
         .progress-container {
             width: 80%;
-            height: 20px;
+            height: 25px;
             background-color: #FFE082;
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
-            border: 2px solid #FFCA28;
+            border: 3px solid #FFCA28;
         }
 
-        /* 實際進度 */
         .progress-bar {
             height: 100%;
-            width: 100%; /* 一開始是滿的 */
-            background-color: #66BB6A; /* 綠色代表食物還很多 */
+            width: 100%;
+            background-color: #66BB6A;
             transition: width 0.5s, background-color 0.5s;
         }
 
-        /* 剩餘口數顯示 */
-        .count-display {
-            font-size: 1.2rem;
-            color: #8D6E63;
-        }
+        .count-display { font-size: 1.5rem; color: #8D6E63; font-weight: bold; }
 
-        /* 餵食按鈕 */
         .feed-btn {
             background-color: #FF6F00;
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 20px 60px;
-            font-size: 1.5rem;
+            padding: 20px 50px;
+            font-size: 1.6rem;
             font-weight: bold;
-            box-shadow: 0 4px 0 #E65100; /* 按鈕立體感 */
-            active: transform: translateY(4px); /* 按下效果 */
-            transition: all 0.1s;
+            box-shadow: 0 6px 0 #E65100;
+            touch-action: manipulation; /* 優化觸控 */
         }
 
         .feed-btn:active {
             box-shadow: 0 0 0 #E65100;
-            transform: translateY(4px);
+            transform: translateY(6px);
         }
 
         .feed-btn:disabled {
-            background-color: #BDBDBD;
+            background-color: #90A4AE;
             box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        /* 完成後的獎勵畫面 */
-        .hidden {
-            display: none;
+            cursor: default;
+            transform: none;
         }
     </style>
 </head>
 <body>
 
-    <h1>熊貓肚子餓了！</h1>
-
-    <div class="message-box" id="message">我想要吃飯飯...</div>
-
-    <div class="panda-container" id="panda">🐼</div>
-
-    <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
+    <div id="selection-screen" class="screen">
+        <h2>奎奎今天想跟誰吃飯？</h2>
+        <div class="grid-container" id="grid">
+            </div>
     </div>
-    <div class="count-display">還剩下 <span id="count">20</span> 口</div>
 
-    <button class="feed-btn" id="feedBtn" onclick="feedPanda()">餵熊貓吃一口 🥄</button>
+    <div id="game-screen" class="screen hidden">
+        <div class="top-bar">
+            <button class="back-btn" onclick="resetGame()">⬅ 重選</button>
+        </div>
+
+        <div class="message-box" id="message">肚子好餓喔...</div>
+        
+        <div class="main-character" id="character-display">🐼</div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="count-display">剩 <span id="count">20</span> 口</div>
+
+        <button class="feed-btn" id="feedBtn" onclick="feedAction()">餵他吃一口 🥄</button>
+    </div>
 
     <script>
-        // --- 設定區 ---
-        let totalBites = 20; // 設定總共要吃幾口
+        // --- 資料設定區 (爸爸可以在這裡新增/修改角色) ---
+        const characters = [
+            { id: 'police', name: '警察叔叔', icon: '👮‍♂️' },
+            { id: 'worker', name: '工人叔叔', icon: '👷‍♂️' },
+            { id: 'cleaner', name: '清潔隊叔叔', icon: '🚛' }, // 用垃圾車代表
+            { id: 'trex', name: '暴龍', icon: '🦖' },
+            { id: 'brachio', name: '腕龍', icon: '🦕' },
+            { id: 'tri', name: '三角龍', icon: '🦏' }, // 用犀牛暫代 (外型最像)
+            { id: 'stego', name: '劍龍', icon: '🐊' }, // 用鱷魚暫代 (背上有刺)
+            { id: 'panda', name: '熊貓', icon: '🐼' }
+        ];
+
+        let totalBites = 20; // 預設口數
         let currentBites = totalBites;
-        
+        let selectedChar = null;
+
         // --- DOM 元素 ---
-        const panda = document.getElementById('panda');
+        const selectionScreen = document.getElementById('selection-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const grid = document.getElementById('grid');
+        const charDisplay = document.getElementById('character-display');
         const message = document.getElementById('message');
         const countSpan = document.getElementById('count');
         const progressBar = document.getElementById('progressBar');
         const btn = document.getElementById('feedBtn');
 
-        // --- 核心功能 ---
-        function feedPanda() {
-            if (currentBites <= 0) return;
-
-            // 1. 減少口數
-            currentBites--;
-            countSpan.innerText = currentBites;
-
-            // 2. 更新進度條
-            let percentage = (currentBites / totalBites) * 100;
-            progressBar.style.width = percentage + "%";
-            
-            // 變更進度條顏色 (快吃完變紅色)
-            if (percentage < 30) {
-                progressBar.style.backgroundColor = "#EF5350";
-            }
-
-            // 3. 播放動畫與音效
-            panda.classList.add('eating');
-            panda.innerText = "😋"; // 變臉
-            message.innerText = "阿姆！真好吃！";
-            
-            // 4. 0.5秒後復原
-            setTimeout(() => {
-                panda.classList.remove('eating');
-                if (currentBites > 0) {
-                    panda.innerText = "🐼";
-                    message.innerText = "還要再一口...";
-                } else {
-                    finishEating();
-                }
-            }, 500);
+        // --- 初始化：產生選擇選單 ---
+        function init() {
+            grid.innerHTML = '';
+            characters.forEach(char => {
+                let card = document.createElement('div');
+                card.className = 'char-card';
+                card.innerHTML = `<span class="char-icon">${char.icon}</span><span class="char-name">${char.name}</span>`;
+                card.onclick = () => startGame(char);
+                grid.appendChild(card);
+            });
         }
 
-        // --- 吃完的慶祝畫面 ---
-        function finishEating() {
-            panda.innerText = "🥳"; // 慶祝表情
-            message.innerText = "吃飽了！你好棒！";
+        // --- 開始遊戲 ---
+        function startGame(char) {
+            selectedChar = char;
+            currentBites = totalBites;
+            
+            // UI 切換
+            selectionScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            // 重置遊戲狀態
+            charDisplay.innerText = char.icon;
+            message.innerText = `${char.name}肚子餓了...`;
+            countSpan.innerText = currentBites;
+            progressBar.style.width = '100%';
+            progressBar.style.backgroundColor = '#66BB6A';
+            btn.disabled = false;
+            btn.innerText = `餵${char.name}吃一口 🥄`;
+            btn.style.backgroundColor = '#FF6F00';
+            document.body.style.backgroundColor = '#FFF8E1';
+        }
+
+        // --- 餵食動作 ---
+        function feedAction() {
+            if (currentBites <= 0) return;
+
+            currentBites--;
+            countSpan.innerText = currentBites;
+            
+            // 更新進度條
+            let percentage = (currentBites / totalBites) * 100;
+            progressBar.style.width = percentage + "%";
+            if (percentage < 30) progressBar.style.backgroundColor = "#EF5350";
+
+            // 動畫與音效
+            charDisplay.classList.add('eating');
+            message.innerText = "阿姆！真好吃！";
+            
+            // 0.4秒後復原
+            setTimeout(() => {
+                charDisplay.classList.remove('eating');
+                if (currentBites > 0) {
+                    message.innerText = "還要再一口...";
+                } else {
+                    finishGame();
+                }
+            }, 400);
+        }
+
+        // --- 結束遊戲 ---
+        function finishGame() {
+            message.innerText = `${selectedChar.name}吃飽了！奎奎好棒！`;
             btn.innerText = "任務完成 🎉";
             btn.disabled = true;
-            btn.style.backgroundColor = "#66BB6A";
-            document.body.style.backgroundColor = "#E8F5E9"; // 背景變綠色
+            btn.style.backgroundColor = "#66BB6A"; // 按鈕變綠
+            document.body.style.backgroundColor = "#E8F5E9"; // 背景變綠
+            charDisplay.innerText = "❤️"; // 變成愛心
             
-            // 簡單的彩帶特效 (用 emoji 模擬)
+            // 噴彩帶
             let i = 0;
             let interval = setInterval(() => {
                 if(i > 10) clearInterval(interval);
@@ -180,20 +270,38 @@
             }, 200);
         }
 
+        // --- 重選角色 ---
+        function resetGame() {
+            gameScreen.classList.add('hidden');
+            selectionScreen.classList.remove('hidden');
+            document.body.style.backgroundColor = '#FFF8E1'; // 背景復原
+        }
+
+        // --- 彩帶特效 ---
         function createConfetti() {
             const confetti = document.createElement('div');
             confetti.innerText = ['🎉', '✨', '⭐', '🎈'][Math.floor(Math.random() * 4)];
             confetti.style.position = 'absolute';
-            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.left = Math.random() * 90 + 5 + 'vw';
             confetti.style.top = '-10vh';
             confetti.style.fontSize = '2rem';
             confetti.style.transition = 'top 2s ease-in';
+            confetti.style.zIndex = '100';
             document.body.appendChild(confetti);
 
             setTimeout(() => {
                 confetti.style.top = '110vh';
             }, 100);
+            
+            // 清除 DOM 以免堆積
+            setTimeout(() => {
+                confetti.remove();
+            }, 2500);
         }
+
+        // 啟動程式
+        init();
+
     </script>
 </body>
 </html>
