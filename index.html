@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>奎奎的餐桌小隊長 v3</title>
+    <title>奎奎的餐桌小隊長 v3.1</title>
     <style>
         /* --- 全局設定 --- */
         body {
@@ -14,10 +14,9 @@
             overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none; /* 防止 iPad 下拉刷新 */
+            touch-action: none;
         }
 
-        /* --- 通用類別 --- */
         .hidden { display: none !important; }
         .screen {
             width: 100%;
@@ -30,17 +29,11 @@
             top: 0;
             left: 0;
             background-color: #FFF8E1;
-            transition: opacity 0.3s;
         }
 
-        /* 按鈕基礎樣式 */
-        button {
-            cursor: pointer;
-            font-family: inherit;
-            touch-action: manipulation;
-        }
+        button { cursor: pointer; font-family: inherit; touch-action: manipulation; }
 
-        /* --- 1. 首頁與選單 --- */
+        /* --- 1. 選單 --- */
         .menu-header {
             display: flex;
             justify-content: space-between;
@@ -48,24 +41,10 @@
             align-items: center;
             margin-bottom: 10px;
         }
-
-        .menu-title {
-            color: #E65100;
-            font-size: 1.5rem;
-            margin: 0;
-        }
-
+        .menu-title { color: #E65100; font-size: 1.5rem; margin: 0; }
         .draw-mode-btn {
-            background: #29B6F6;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 0 #0288D1;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            background: #29B6F6; color: white; border: none; border-radius: 50px;
+            padding: 8px 16px; font-size: 1.1rem; box-shadow: 0 4px 0 #0288D1;
         }
 
         .grid-container {
@@ -79,128 +58,62 @@
         }
 
         .char-card {
-            background: white;
-            border: 3px solid #FFD54F;
-            border-radius: 20px;
-            padding: 10px;
-            text-align: center;
-            box-shadow: 0 4px 0 #FFB300;
-            transition: transform 0.1s;
+            background: white; border: 3px solid #FFD54F; border-radius: 20px;
+            padding: 10px; text-align: center; box-shadow: 0 4px 0 #FFB300;
         }
         .char-card:active { transform: scale(0.95); box-shadow: 0 0 0 #FFB300; }
         .char-icon { font-size: 3.5rem; display: block; margin-bottom: 5px;}
-        .char-name { font-size: 1.1rem; color: #5D4037; font-weight: bold; }
+        .char-name { font-size: 1.2rem; color: #5D4037; font-weight: bold; }
 
-        /* --- 2. 遊戲頁面 --- */
-        .top-bar {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 10;
-        }
+        /* --- 2. 遊戲區 --- */
+        .top-bar { position: absolute; top: 15px; left: 15px; z-index: 10; }
         .back-btn {
-            background: #BCAAA4;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: bold;
+            background: #BCAAA4; color: white; border: none;
+            padding: 10px 20px; border-radius: 30px; font-size: 1rem; font-weight: bold;
         }
 
         .main-character {
-            font-size: 9rem;
-            transition: transform 0.2s;
-            margin: 20px 0;
+            font-size: 9rem; margin: 20px 0; transition: transform 0.2s;
             filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
         }
-        
-        /* 吃東西動畫：放大 + 搖擺 */
+        .eating { animation: eatAnim 0.4s ease-in-out; }
         @keyframes eatAnim {
             0% { transform: scale(1); }
             50% { transform: scale(1.3) rotate(-10deg); }
             100% { transform: scale(1); }
         }
-        .eating { animation: eatAnim 0.3s ease-in-out; }
 
         .message-box {
-            height: 40px;
-            color: #5D4037;
-            font-weight: bold;
-            font-size: 1.5rem;
-            text-align: center;
+            height: 50px; color: #5D4037; font-weight: bold; font-size: 1.6rem;
+            text-align: center; display: flex; align-items: center; justify-content: center;
         }
 
         .progress-container {
-            width: 85%;
-            height: 30px;
-            background-color: #FFE082;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 4px solid #FFCA28;
-            margin-bottom: 10px;
+            width: 85%; height: 30px; background-color: #FFE082;
+            border-radius: 20px; overflow: hidden; border: 4px solid #FFCA28; margin-bottom: 10px;
         }
         .progress-bar { height: 100%; width: 100%; background-color: #66BB6A; transition: width 0.5s; }
         .count-display { font-size: 1.5rem; color: #8D6E63; font-weight: bold; margin-bottom: 20px; }
 
         .feed-btn {
-            background-color: #FF6F00;
-            color: white;
-            border: none;
-            border-radius: 60px;
-            padding: 20px 60px;
-            font-size: 1.8rem;
-            font-weight: bold;
-            box-shadow: 0 8px 0 #E65100;
-            transition: transform 0.1s;
+            background-color: #FF6F00; color: white; border: none; border-radius: 60px;
+            padding: 20px 50px; font-size: 1.8rem; font-weight: bold;
+            box-shadow: 0 8px 0 #E65100; transition: transform 0.1s;
         }
         .feed-btn:active { box-shadow: 0 0 0 #E65100; transform: translateY(8px); }
         .feed-btn:disabled { background-color: #90A4AE; box-shadow: none; transform: none; }
 
-        /* --- 3. 塗鴉頁面 --- */
+        /* --- 3. 畫布 --- */
         #drawing-screen { background-color: #fff; }
-        
         .toolbar {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: #EEE;
-            padding: 15px 10px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            box-sizing: border-box;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            position: absolute; bottom: 0; width: 100%; background: #EEE;
+            padding: 15px 10px; display: flex; justify-content: center; gap: 10px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); box-sizing: border-box;
         }
-
-        .color-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
+        .color-btn { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .color-btn.active { transform: scale(1.2); border-color: #333; }
-
-        .tool-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            border: none;
-            background: white;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .tool-btn:active { background: #ddd; }
-
-        canvas {
-            touch-action: none; /* 關鍵：讓 canvas 可以畫圖而不是捲動頁面 */
-        }
-
+        .tool-btn { width: 45px; height: 45px; border-radius: 10px; border: none; background: white; font-size: 1.5rem; }
+        canvas { touch-action: none; }
     </style>
 </head>
 <body>
@@ -208,142 +121,102 @@
     <div id="selection-screen" class="screen">
         <div class="menu-header">
             <h2 class="menu-title">誰要吃飯？</h2>
-            <button class="draw-mode-btn" onclick="goToDrawing()">
-                🎨 畫畫
-            </button>
+            <button class="draw-mode-btn" onclick="goToDrawing()">🎨 畫畫</button>
         </div>
         <div class="grid-container" id="grid"></div>
     </div>
 
     <div id="game-screen" class="screen hidden">
-        <div class="top-bar">
-            <button class="back-btn" onclick="goHome()">⬅ 回去</button>
-        </div>
-
+        <div class="top-bar"><button class="back-btn" onclick="goHome()">⬅ 回去</button></div>
+        
         <div class="message-box" id="message"></div>
         <div class="main-character" id="char-display" onclick="pokeCharacter()"></div>
 
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
+        <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
         <div class="count-display">剩 <span id="count">0</span> 口</div>
 
         <button class="feed-btn" id="feedBtn" onclick="feedAction()">餵他吃 🥄</button>
     </div>
 
     <div id="drawing-screen" class="screen hidden">
-        <div class="top-bar">
-            <button class="back-btn" onclick="goHome()">⬅ 不畫了</button>
-        </div>
+        <div class="top-bar"><button class="back-btn" onclick="goHome()">⬅ 不畫了</button></div>
         <canvas id="drawCanvas"></canvas>
-        
         <div class="toolbar">
             <button class="color-btn" style="background:#F44336" onclick="setColor('#F44336', this)"></button>
             <button class="color-btn" style="background:#FF9800" onclick="setColor('#FF9800', this)"></button>
-            <button class="color-btn" style="background:#FFEB3B" onclick="setColor('#FFEB3B', this)"></button>
             <button class="color-btn active" style="background:#4CAF50" onclick="setColor('#4CAF50', this)"></button>
             <button class="color-btn" style="background:#2196F3" onclick="setColor('#2196F3', this)"></button>
-            <button class="color-btn" style="background:#9C27B0" onclick="setColor('#9C27B0', this)"></button>
-            <button class="color-btn" style="background:#333333" onclick="setColor('#333333', this)"></button>
-            
-            <div style="width: 10px;"></div> <button class="tool-btn" onclick="setEraser()" title="橡皮擦">🧼</button>
-            <button class="tool-btn" onclick="clearCanvas()" title="全部清除" style="color:red">🗑️</button>
+            <button class="tool-btn" onclick="setEraser()">🧼</button>
+            <button class="tool-btn" onclick="clearCanvas()" style="color:red">🗑️</button>
         </div>
     </div>
 
     <script>
-        // --- 設定區 ---
-        // pitch: 0.1(低沉) ~ 2(高尖), rate: 速度
+        // --- 角色資料 (rate: 語速, 1是正常, 0.7是慢速) ---
         const characters = [
-            { id: 'police', name: '警察叔叔', icon: '👮‍♂️', msg: '維持秩序，吃飯！', pitch: 1, type: 'human' },
-            { id: 'fire', name: '消防車', icon: '🚒', msg: '滅火需要體力！', pitch: 0.8, type: 'machine' },
-            { id: 'train', name: '高鐵', icon: '🚅', msg: '車車要進站囉！', pitch: 1, type: 'machine' },
-            { id: 'worker', name: '工人叔叔', icon: '👷‍♂️', msg: '蓋房子要力氣！', pitch: 0.9, type: 'human' },
-            { id: 'cleaner', name: '垃圾車', icon: '🚛', msg: '專門吃剩菜剩飯！', pitch: 0.6, type: 'machine' },
-            { id: 'robot', name: '機器人', icon: '🤖', msg: '補-充-能-量-嗶-波', pitch: 0.5, rate: 0.8, type: 'robot' },
-            { id: 'lion', name: '獅子', icon: '🦁', msg: '吼～我要吃肉肉！', pitch: 0.7, type: 'animal' },
-            { id: 'trex', name: '暴龍', icon: '🦖', msg: '我是恐龍之王！', pitch: 0.1, rate: 0.8, type: 'animal' },
-            { id: 'brachio', name: '腕龍', icon: '🦕', msg: '我脖子長長要吃菜', pitch: 1.2, type: 'animal' },
-            { id: 'rocket', name: '火箭', icon: '🚀', msg: '準備發射！倒數！', pitch: 1, type: 'machine' },
-            { id: 'super', name: '超人', icon: '🦸‍♂️', msg: '吃飽才能救地球！', pitch: 1.2, type: 'human' }
+            { id: 'police', name: '警察叔叔', icon: '👮‍♂️', msg: '快吃飯，要巡邏了！', pitch: 1, rate: 0.75 },
+            { id: 'fire', name: '消防車', icon: '🚒', msg: '加滿水，準備出發！', pitch: 0.8, rate: 0.75 },
+            { id: 'train', name: '高鐵', icon: '🚅', msg: '各位旅客，請吃飯！', pitch: 1, rate: 0.8 },
+            { id: 'cleaner', name: '垃圾車', icon: '🚛', msg: '我不挑食，什麼都吃！', pitch: 0.6, rate: 0.7 },
+            { id: 'robot', name: '機器人', icon: '🤖', msg: '能-量-不-足-請-餵-食', pitch: 0.5, rate: 0.5 }, // 機器人特慢
+            { id: 'trex', name: '暴龍', icon: '🦖', msg: '吼～我要吃二十口！', pitch: 0.1, rate: 0.6 }, // 暴龍慢且低沉
+            { id: 'brachio', name: '腕龍', icon: '🦕', msg: '慢慢吃，長高高～', pitch: 1.2, rate: 0.7 },
+            { id: 'super', name: '超人', icon: '🦸‍♂️', msg: '吃飽才有力氣飛！', pitch: 1.1, rate: 0.8 }
         ];
 
         let totalBites = 20;
         let currentBites = 20;
         let selectedChar = null;
-        
-        // --- 音效系統 (AudioContext) ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
 
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            if (type === 'eat') {
-                // 可愛的啵啵聲
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.1);
-            } else if (type === 'win') {
-                // 勝利音效 (簡單的和弦)
-                playNote(523.25, 0, 0.2); // C
-                playNote(659.25, 0.2, 0.2); // E
-                playNote(783.99, 0.4, 0.4); // G
+        // --- 核心語音功能 (優化版) ---
+        function speak(text, pitch = 1, rate = 0.75) { // 預設語速 0.75 (慢速)
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // 打斷上一句
+                const u = new SpeechSynthesisUtterance(text);
+                u.pitch = pitch;
+                u.rate = rate; // 套用慢速
+                u.lang = 'zh-TW';
+                window.speechSynthesis.speak(u);
             }
         }
 
-        function playNote(freq, startTime, duration) {
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            osc.type = 'triangle';
-            osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime + startTime);
-            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + startTime + duration);
-            osc.start(audioCtx.currentTime + startTime);
-            osc.stop(audioCtx.currentTime + startTime + duration);
-        }
 
-        // --- 語音系統 (TTS) ---
-        function speak(text, pitch = 1, rate = 1) {
-            // 如果瀏覽器支援說話
-            if ('speechSynthesis' in window) {
-                // 停止正在說的話
-                window.speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.pitch = pitch; // 語調高低
-                utterance.rate = rate;   // 說話速度
-                utterance.lang = 'zh-TW'; // 設定中文
-                window.speechSynthesis.speak(utterance);
+            if (type === 'eat') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'win') {
+                playNote(523,0,0.2); playNote(659,0.2,0.2); playNote(784,0.4,0.4);
             }
         }
 
-        // --- 頁面控制 ---
-        const screens = {
-            select: document.getElementById('selection-screen'),
-            game: document.getElementById('game-screen'),
-            draw: document.getElementById('drawing-screen')
-        };
-
-        function switchScreen(screenName) {
-            Object.values(screens).forEach(s => s.classList.add('hidden'));
-            screens[screenName].classList.remove('hidden');
+        function playNote(f, t, d) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.value = f;
+            g.gain.setValueAtTime(0.2, audioCtx.currentTime + t);
+            g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + t + d);
+            o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + d);
         }
 
-        function goHome() {
-            switchScreen('select');
-            document.body.style.backgroundColor = '#FFF8E1';
+        // --- 介面邏輯 ---
+        const screens = { select: document.getElementById('selection-screen'), game: document.getElementById('game-screen'), draw: document.getElementById('drawing-screen') };
+        
+        function switchScreen(name) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[name].classList.remove('hidden');
         }
 
         function initMenu() {
@@ -353,205 +226,124 @@
                 let card = document.createElement('div');
                 card.className = 'char-card';
                 card.innerHTML = `<span class="char-icon">${char.icon}</span><span class="char-name">${char.name}</span>`;
-                card.onclick = () => startGame(char);
+                // 點選時，先唸出名字，再開始
+                card.onclick = () => {
+                    speak(char.name, 1, 0.8); // 唸名字
+                    setTimeout(() => startGame(char), 500); // 延遲一下再進遊戲
+                };
                 grid.appendChild(card);
             });
         }
 
-        // --- 遊戲邏輯 ---
         function startGame(char) {
             selectedChar = char;
             currentBites = totalBites;
             switchScreen('game');
 
-            // UI 初始化
             document.getElementById('char-display').innerText = char.icon;
             document.getElementById('message').innerText = char.msg;
             document.getElementById('count').innerText = currentBites;
-            
-            const pBar = document.getElementById('progressBar');
-            pBar.style.width = '100%';
-            pBar.style.backgroundColor = '#66BB6A';
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('progressBar').style.backgroundColor = '#66BB6A';
             
             const btn = document.getElementById('feedBtn');
             btn.disabled = false;
             btn.innerText = "餵他吃 🥄";
             btn.style.backgroundColor = '#FF6F00';
 
-            // 角色開場白
+            // 進入畫面後，自動唸出開場白
             setTimeout(() => {
-                speak(`${char.name}來囉！${char.msg}`, char.pitch, char.rate || 1);
-            }, 500);
-        }
-
-        function pokeCharacter() {
-            // 點擊角色會有反應
-            const char = document.getElementById('char-display');
-            char.classList.add('eating');
-            playSound('eat');
-            setTimeout(() => char.classList.remove('eating'), 300);
-            
-            // 隨機說話
-            const mood = ["好餓喔", "快餵我", "還有多久", "阿姆阿姆"];
-            speak(mood[Math.floor(Math.random()*mood.length)], selectedChar.pitch);
+                speak(`我是${char.name}，${char.msg}`, char.pitch, char.rate);
+            }, 600);
         }
 
         function feedAction() {
             if (currentBites <= 0) return;
-
             currentBites--;
             document.getElementById('count').innerText = currentBites;
             
-            // 進度條
             let pct = (currentBites / totalBites) * 100;
             const pBar = document.getElementById('progressBar');
             pBar.style.width = pct + "%";
             if (pct < 30) pBar.style.backgroundColor = "#EF5350";
 
-            // 動畫 & 音效
             const charDiv = document.getElementById('char-display');
             charDiv.classList.add('eating');
             playSound('eat');
-            
-            document.getElementById('message').innerText = "阿姆！好吃！";
+
+            // 隨機語音回饋
+            const tastyWords = ["阿姆", "好吃", "再來", "真棒"];
+            const word = tastyWords[Math.floor(Math.random()*tastyWords.length)];
+            // 唸短語，不打斷節奏
+            speak(word, selectedChar.pitch, 1.0); 
 
             setTimeout(() => {
                 charDiv.classList.remove('eating');
-                if (currentBites > 0) {
-                    document.getElementById('message').innerText = "還要還要...";
-                } else {
-                    finishGame();
-                }
+                if (currentBites <= 0) finishGame();
             }, 300);
         }
 
         function finishGame() {
-            document.getElementById('message').innerText = "吃飽了！奎奎太棒了！";
             const btn = document.getElementById('feedBtn');
             btn.innerText = "任務達成 🎉";
             btn.disabled = true;
             btn.style.backgroundColor = "#66BB6A";
+            document.getElementById('message').innerText = "吃飽了！奎奎好棒！";
             document.body.style.backgroundColor = "#E8F5E9";
-            
+
             playSound('win');
-            speak(`哇！${selectedChar.name}吃飽了！謝謝奎奎！`, selectedChar.pitch);
-            
-            // 彩帶
+            // 清楚的結束語音
+            speak(`吃飽了！謝謝奎奎！你真的好棒喔！`, selectedChar.pitch, 0.8);
+
             let i = 0;
             let interval = setInterval(() => {
                 if(i > 15) clearInterval(interval);
-                createConfetti();
-                i++;
+                createConfetti(); i++;
             }, 200);
         }
 
+        function pokeCharacter() {
+            const charDiv = document.getElementById('char-display');
+            charDiv.classList.add('eating');
+            setTimeout(()=>charDiv.classList.remove('eating'), 300);
+            speak("我肚子好餓喔", selectedChar.pitch, selectedChar.rate);
+        }
+
+        function goHome() {
+            switchScreen('select');
+            document.body.style.backgroundColor = '#FFF8E1';
+            speak("要選誰呢？", 1, 0.8);
+        }
+        
+        // 畫布與彩帶功能 (簡化保留)
         function createConfetti() {
             const c = document.createElement('div');
-            c.innerText = ['🎉', '⭐', '🎈', '✨'][Math.floor(Math.random()*4)];
-            c.style.position = 'absolute';
-            c.style.left = Math.random()*90 + 5 + 'vw';
-            c.style.top = '-10vh';
-            c.style.fontSize = '2rem';
-            c.style.transition = 'top 2.5s ease-in';
-            c.style.zIndex = 100;
+            c.innerText = ['🎉','⭐','🎈'][Math.floor(Math.random()*3)];
+            c.style.position='absolute'; c.style.left=Math.random()*90+5+'vw'; c.style.top='-10vh';
+            c.style.fontSize='2rem'; c.style.transition='top 2.5s ease-in';
             document.body.appendChild(c);
-            setTimeout(() => c.style.top = '110vh', 50);
-            setTimeout(() => c.remove(), 2600);
+            setTimeout(()=>c.style.top='110vh',50); setTimeout(()=>c.remove(),2600);
         }
-
-        // --- 塗鴉功能邏輯 (Canvas) ---
-        let canvas, ctx, isDrawing = false;
-        let lastX = 0, lastY = 0;
-        let brushColor = '#4CAF50';
-        let brushSize = 5;
-
-        function goToDrawing() {
-            switchScreen('draw');
-            initCanvas();
-        }
-
-        function initCanvas() {
-            canvas = document.getElementById('drawCanvas');
-            ctx = canvas.getContext('2d');
-            resizeCanvas();
-            
-            // 事件監聽 (支援滑鼠與觸控)
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', () => isDrawing = false);
-            canvas.addEventListener('mouseout', () => isDrawing = false);
-
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // 防止捲動
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent("mousedown", {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
-            }, {passive: false});
-
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent("mousemove", {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
-            }, {passive: false});
-
-            canvas.addEventListener('touchend', () => isDrawing = false);
-        }
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            // 視窗改變大小時，可能會清除畫面，這裡簡單處理就不保存舊圖了
-        }
-
-        function startDraw(e) {
-            isDrawing = true;
-            [lastX, lastY] = [e.clientX, e.clientY];
-        }
-
-        function draw(e) {
-            if (!isDrawing) return;
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(e.clientX, e.clientY);
-            ctx.strokeStyle = brushColor;
-            ctx.lineWidth = brushSize;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.stroke();
-            [lastX, lastY] = [e.clientX, e.clientY];
-        }
-
-        function setColor(color, btn) {
-            brushColor = color;
-            brushSize = 5; // 恢復筆刷大小
-            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        function setEraser() {
-            brushColor = '#FFFFFF';
-            brushSize = 30; // 橡皮擦大一點
-            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-        }
-
-        function clearCanvas() {
-            if(confirm('要重新畫一張嗎？')) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        window.addEventListener('resize', resizeCanvas);
         
-        // 啟動
+        let canvas, ctx, isDrawing=false;
+        function goToDrawing() { switchScreen('draw'); initCanvas(); speak("來畫畫吧", 1, 0.8); }
+        function initCanvas() {
+            canvas=document.getElementById('drawCanvas'); ctx=canvas.getContext('2d');
+            canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+            canvas.addEventListener('mousedown', sD); canvas.addEventListener('mousemove', d);
+            canvas.addEventListener('mouseup', ()=>isDrawing=false);
+            canvas.addEventListener('touchstart', (e)=>{e.preventDefault();const t=e.touches[0];sD({clientX:t.clientX,clientY:t.clientY})},{passive:false});
+            canvas.addEventListener('touchmove', (e)=>{e.preventDefault();const t=e.touches[0];d({clientX:t.clientX,clientY:t.clientY})},{passive:false});
+            canvas.addEventListener('touchend', ()=>isDrawing=false);
+        }
+        let brushColor='#4CAF50', brushSize=5;
+        function sD(e){isDrawing=true; [lX,lY]=[e.clientX,e.clientY];}
+        function d(e){if(!isDrawing)return; ctx.beginPath(); ctx.moveTo(lX,lY); ctx.lineTo(e.clientX,e.clientY); ctx.strokeStyle=brushColor; ctx.lineWidth=brushSize; ctx.lineCap='round'; ctx.stroke(); [lX,lY]=[e.clientX,e.clientY];}
+        function setColor(c,b){brushColor=c; brushSize=5; document.querySelectorAll('.color-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); speak("換顏色",1,0.8);}
+        function setEraser(){brushColor='#FFF'; brushSize=30; speak("橡皮擦",1,0.8);}
+        function clearCanvas(){if(confirm('重畫?'))ctx.clearRect(0,0,canvas.width,canvas.height);}
+        
         initMenu();
-
     </script>
 </body>
 </html>
